@@ -86,8 +86,8 @@ int main()
     sf::RectangleShape centerPaddle;
     centerPaddle.setSize(paddleSize - sf::Vector2f(3, 3));
     centerPaddle.setOutlineThickness(3);
-    centerPaddle.setOutlineColor(sf::Color::Black);
-    centerPaddle.setFillColor(sf::Color(100, 100, 200));
+    centerPaddle.setOutlineColor(sf::Color::White);
+    centerPaddle.setFillColor(sf::Color::Yellow);
     centerPaddle.setOrigin(paddleSize / 2.f);
     centerPaddle.setPosition(400, 300);
 
@@ -294,10 +294,8 @@ int main()
             }
 
             // Center Paddle
-            if (((ball.getPosition().x - ballRadius < centerPaddle.getPosition().x + paddleSize.x / 2 &&
-                ball.getPosition().x - ballRadius > centerPaddle.getPosition().x )||
-                (ball.getPosition().x + ballRadius > centerPaddle.getPosition().x - paddleSize.x / 2 &&
-                ball.getPosition().x + ballRadius < centerPaddle.getPosition().x)) &&
+            if (ball.getPosition().x + ballRadius > centerPaddle.getPosition().x - paddleSize.x / 2 &&
+                ball.getPosition().x + ballRadius < centerPaddle.getPosition().x &&
                 ball.getPosition().y + ballRadius >= centerPaddle.getPosition().y - paddleSize.y / 2 &&
                 ball.getPosition().y - ballRadius <= centerPaddle.getPosition().y + paddleSize.y / 2)
             {
@@ -305,10 +303,21 @@ int main()
                     ballAngle = pi - ballAngle + static_cast<float>(std::rand() % 20) * pi / 180;
                 else
                     ballAngle = pi - ballAngle - static_cast<float>(std::rand() % 20) * pi / 180;
-                if (ball.getPosition().x > centerPaddle.getPosition().x)
-                    ball.setPosition(centerPaddle.getPosition().x + ballRadius + paddleSize.x / 2 + 0.1f, ball.getPosition().y);
                 ballSound.play();
                 ball.setPosition(centerPaddle.getPosition().x - ballRadius - paddleSize.x / 2 - 0.1f, ball.getPosition().y);
+            }
+            if (ball.getPosition().x - ballRadius < centerPaddle.getPosition().x + paddleSize.x / 2 &&
+                ball.getPosition().x - ballRadius > centerPaddle.getPosition().x &&
+                ball.getPosition().y + ballRadius >= centerPaddle.getPosition().y - paddleSize.y / 2 &&
+                ball.getPosition().y - ballRadius <= centerPaddle.getPosition().y + paddleSize.y / 2)
+            {
+                if (ball.getPosition().y > centerPaddle.getPosition().y)
+                    ballAngle = pi - ballAngle + static_cast<float>(std::rand() % 20) * pi / 180;
+                else
+                    ballAngle = pi - ballAngle - static_cast<float>(std::rand() % 20) * pi / 180;
+
+                ballSound.play();
+                ball.setPosition(centerPaddle.getPosition().x + ballRadius + paddleSize.x / 2 + 0.1f, ball.getPosition().y);
             }
             // Clear the window
             window.clear(sf::Color(50, 50, 50));
