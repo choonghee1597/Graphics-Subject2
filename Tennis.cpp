@@ -83,6 +83,14 @@ int main()
     ball.setFillColor(sf::Color::White);
     ball.setOrigin(ballRadius / 2, ballRadius / 2);
 
+    sf::RectangleShape centerPaddle;
+    centerPaddle.setSize(paddleSize - sf::Vector2f(3, 3));
+    centerPaddle.setOutlineThickness(3);
+    centerPaddle.setOutlineColor(sf::Color::Black);
+    centerPaddle.setFillColor(sf::Color(100, 100, 200));
+    centerPaddle.setOrigin(paddleSize / 2.f);
+    centerPaddle.setPosition(400, 300);
+
     // Load the text font
     sf::Font font;
     if (!font.loadFromFile(resourcesDir() + "tuffy.ttf"))
@@ -186,7 +194,7 @@ int main()
         if (isPlaying)
         {
             float deltaTime = clock.restart().asSeconds();
-            
+
             scoreText.setString(std::to_string(leftScore) + " - " + std::to_string(rightScore));
             // Move the player's paddle
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) &&
@@ -284,29 +292,47 @@ int main()
                 ballSound.play();
                 ball.setPosition(rightPaddle.getPosition().x - ballRadius - paddleSize.x / 2 - 0.1f, ball.getPosition().y);
             }
+
+            // Center Paddle
+            if (((ball.getPosition().x - ballRadius < centerPaddle.getPosition().x + paddleSize.x / 2 &&
+                ball.getPosition().x - ballRadius > centerPaddle.getPosition().x )||
+                (ball.getPosition().x + ballRadius > centerPaddle.getPosition().x - paddleSize.x / 2 &&
+                ball.getPosition().x + ballRadius < centerPaddle.getPosition().x)) &&
+                ball.getPosition().y + ballRadius >= centerPaddle.getPosition().y - paddleSize.y / 2 &&
+                ball.getPosition().y - ballRadius <= centerPaddle.getPosition().y + paddleSize.y / 2)
+            {
+                if (ball.getPosition().y > centerPaddle.getPosition().y)
+                    ballAngle = pi - ballAngle + static_cast<float>(std::rand() % 20) * pi / 180;
+                else
+                    ballAngle = pi - ballAngle - static_cast<float>(std::rand() % 20) * pi / 180;
+                if (ball.getPosition().x > centerPaddle.getPosition().x)
+                    ball.setPosition(centerPaddle.getPosition().x + ballRadius + paddleSize.x / 2 + 0.1f, ball.getPosition().y);
+                ballSound.play();
+                ball.setPosition(centerPaddle.getPosition().x - ballRadius - paddleSize.x / 2 - 0.1f, ball.getPosition().y);
+            }
+            // Clear the window
+            window.clear(sf::Color(50, 50, 50));
+
+            if (isPlaying)
+            {
+                // Draw the paddles and the ball
+                window.draw(scoreText);
+                window.draw(leftPaddle);
+                window.draw(rightPaddle);
+                window.draw(centerPaddle);
+                window.draw(ball);
+            }
+            else
+            {
+                // Draw the pause message
+                window.draw(pauseMessage);
+                window.draw(sfmlLogo);
             }
 
-        // Clear the window
-        window.clear(sf::Color(50, 50, 50));
-
-        if (isPlaying)
-        {
-            // Draw the paddles and the ball
-            window.draw(scoreText);
-            window.draw(leftPaddle);
-            window.draw(rightPaddle);
-            window.draw(ball);
-        }
-        else
-        {
-            // Draw the pause message
-            window.draw(pauseMessage);
-            window.draw(sfmlLogo);
+            // Display things on screen
+            window.display();
         }
 
-        // Display things on screen
-        window.display();
-        }
-
+    }
     return EXIT_SUCCESS;
 }
